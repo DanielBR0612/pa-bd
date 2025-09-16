@@ -1,0 +1,43 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: vendas_postgres_db
+    environment:
+      # Essas variáveis configuram o banco de dados na primeira vez que ele é criado.
+      # Elas devem bater com as que sua aplicação espera.
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sistema_vendas
+    ports:
+      # Mapeia a porta 5432 do container para a porta 5432 da sua máquina.
+      # Útil para conectar um cliente de banco de dados (DBeaver, pgAdmin) para depuração.
+      - "5432:5432"
+    volumes:
+      # Garante que os dados do banco de dados persistam mesmo se o container for removido.
+      - postgres_data:/var/lib/postgresql/data
+
+  # Serviço da sua Aplicação Python CLI
+  app:
+    build: .  # Constrói a imagem a partir do Dockerfile na pasta atual.
+    container_name: vendas_cli_app
+    depends_on:
+      - db  # Garante que o serviço 'db' seja iniciado antes do serviço 'app'.
+    environment:
+      # Injeta as variáveis de ambiente no container da aplicação.
+      # Note que DB_HOST é 'db', o nome do serviço do banco de dados!
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: sistema_vendas
+    # Essas duas linhas são essenciais para que um aplicativo CLI interativo funcione.
+    # Elas mantêm o container rodando e conectado ao seu terminal.
+    stdin_open: true
+    tty: true
+
+volumes:
+  # Declara o volume nomeado para persistência de dados.
+  postgres_data:

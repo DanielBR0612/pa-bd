@@ -6,10 +6,10 @@ from psycopg2 import sql
 #import tabulate
 
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'postgres',
-    'password': 'postgres',
-    'database': 'sistema_vendas'
+    'host': os.getenv('DB_HOST', 'localhost'),
+    'user': os.getenv('DB_USER', 'postgres'),
+    'password': os.getenv('DB_PASS', 'postgres'),
+    'database': os.getenv('DB_NAME', 'sistema_vendas')
 }
 
 class SistemaVendasCLI:
