@@ -1,4 +1,5 @@
 from django.contrib import admin
+<<<<<<< HEAD
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework import permissions
@@ -23,6 +24,21 @@ router = DefaultRouter()
 router.register(r'usuarios', views.UsuarioViewSet)
 router.register(r'projetos', views.ProjetoViewsSet)
 router.register(r'tarefas', views.TarefaViewSet)
+=======
+from django.urls import pathfrom django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ProjetoViewSet, TarefaViewSet, UsuarioViewSet, RegisterAPIView
+
+router = DefaultRouter()
+router.register("projetos", ProjetoViewSet, basename="projeto")
+router.register("tarefas", TarefaViewSet, basename="tarefa")
+router.register("usuarios", UsuarioViewSet, basename="usuario")
+
+urlpatterns = [
+    path("auth/register/", RegisterAPIView.as_view(), name="register"),
+    path("", include(router.urls)),
+]
+>>>>>>> fixação_bd
 
 urlpatterns = [
     path('admin/', admin.site.urls),
