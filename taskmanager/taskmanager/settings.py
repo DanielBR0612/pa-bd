@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'amazon.wsgi.application'
+WSGI_APPLICATION = 'taskmanager.wsgi.application'
 
 
 # Database
