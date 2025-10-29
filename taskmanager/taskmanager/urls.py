@@ -16,7 +16,19 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import pathfrom django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ProjetoViewSet, TarefaViewSet, UsuarioViewSet, RegisterAPIView
+
+router = DefaultRouter()
+router.register("projetos", ProjetoViewSet, basename="projeto")
+router.register("tarefas", TarefaViewSet, basename="tarefa")
+router.register("usuarios", UsuarioViewSet, basename="usuario")
+
+urlpatterns = [
+    path("auth/register/", RegisterAPIView.as_view(), name="register"),
+    path("", include(router.urls)),
+]
 
 urlpatterns = [
     path("admin/", admin.site.urls),
