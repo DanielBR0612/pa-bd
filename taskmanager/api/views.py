@@ -23,6 +23,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             user.save()
             return user
 
+#class based views
 from rest_framework import viewsets, status
 from rest_framework.permission_classes import IsAuthenticated
 from rest_framework.response import Response 
@@ -62,4 +63,3 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
-
