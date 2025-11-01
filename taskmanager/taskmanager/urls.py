@@ -1,9 +1,8 @@
 from django.contrib import admin
-<<<<<<< HEAD
-from django.urls import path, include
+from django.urls import path, re_path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework import permissions
-from backend import views
+from api import views
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -22,27 +21,17 @@ schema_view = get_schema_view(
 
 router = DefaultRouter()
 router.register(r'usuarios', views.UsuarioViewSet)
-router.register(r'projetos', views.ProjetoViewsSet)
-router.register(r'tarefas', views.TarefaViewSet)
-=======
-from django.urls import pathfrom django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ProjetoViewSet, TarefaViewSet, UsuarioViewSet, RegisterAPIView
-
-router = DefaultRouter()
-router.register("projetos", ProjetoViewSet, basename="projeto")
-router.register("tarefas", TarefaViewSet, basename="tarefa")
-router.register("usuarios", UsuarioViewSet, basename="usuario")
-
-urlpatterns = [
-    path("auth/register/", RegisterAPIView.as_view(), name="register"),
-    path("", include(router.urls)),
-]
->>>>>>> fixação_bd
+# router.register(r'projetos', views.ProjetoViewsSet)
+# router.register(r'tarefas', views.TarefaViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    
+    path('api/signup/', views.signup, name='signup'),
+    path('api/login/', views.login, name='login'),
+    path('api/test_token/', views.test_token, name='test_token'),
+    
     path('api/', include(router.urls)),
 ]
