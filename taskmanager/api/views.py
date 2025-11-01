@@ -5,9 +5,7 @@ from .serializers import UsuarioSerializer, TarefaSerializer, ProjetoSerializer
 from rest_framework import viewsets 
 from rest_framework.response import Response 
 from rest_framework import status 
-from django.contrib.auth import authenticate, login 
 from rest_framework.decorators import api_view 
-from rest_framework.authentication import BasicAuthentication 
 from rest_framework.permissions import IsAuthenticated 
 
 from rest_framework.authtoken.models import Token 
@@ -21,6 +19,13 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
 
+class TarefaViewSet(viewsets.ModelViewSet):
+    queryset = Tarefa.objects.all()
+    serializer_class = TarefaSerializer
+
+class ProjetoViewSet(viewsets.ModelViewSet):
+    queryset = Projeto.objects.all()
+    serializer_class = ProjetoSerializer
 
 @api_view(['POST'])
 def login(request):
@@ -41,7 +46,6 @@ def signup(request):
         user.set_password(request.data['password'])
         user.save()
         
-        # Agora isso vai funcionar!
         token = Token.objects.create(user=user) 
         
         return Response({'token': token.key, 'user':serializer.data})
