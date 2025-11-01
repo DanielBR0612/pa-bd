@@ -10,6 +10,7 @@ def menu():
 URL = ''
 URL_signup = "http://127.0.0.1:8000/api/signup/" 
 URL_login = "http://127.0.0.1:8000/api/login/"
+URL_test = "http://127.0.0.1:8000/api/test_token/"
 
 def main():
     op = 0
@@ -21,6 +22,9 @@ def main():
         if op == 2:
             URL = URL_login
             login(URL)
+        if op == 3:
+            URL = URL_test
+            test(URL)
         
 
 def signup(URL):
@@ -33,9 +37,6 @@ def signup(URL):
         "password": senha,
         "email": email
     }
-
-    print(f"Enviando dados para: {URL}")
-    print(f"Dados: {json.dumps(novo_usuario, indent=2)}")
     
     requisicao(URL, novo_usuario)
 
@@ -49,6 +50,18 @@ def login(URL):
     }
     
     requisicao(URL, usuario)
+
+def test(URL):
+    response = requests.get(URL)
+    
+    print(f"\nStatus Code: { response.status_code}")
+    try:
+        print("Resposta do Servidor (JSON):")
+        print(json.dumps(response.json(), indent=2))
+    except requests.exceptions.JSONDecodeError:
+        # Se a resposta não for JSON (ex: um erro 500)
+        print("Resposta do Servidor (Texto):")
+        print(response.text)
     
 def requisicao(URL, user):
     try:
