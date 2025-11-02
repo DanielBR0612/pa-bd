@@ -28,16 +28,16 @@ def main():
         op = menu()
         if op == 1:
             URL = URL_projetos
-            criar_projeto(URL)
+            criar_projeto(URL, token_salvo)
         if op == 2:
             URL = URL_projetos
-            requisicao_get(URL)
+            requisicao_get(URL, token_salvo)
         if op == 3:
             URL = URL_tarefas
-            criar_tarefa(URL)
+            criar_tarefa(URL, token_salvo)
         if op == 4:
             URL = URL_tarefas
-            requisicao_get(URL)
+            requisicao_get(URL, token_salvo)
         if op == 5:
             URL = URL_test
             if not token_salvo:
@@ -57,7 +57,7 @@ def signup(URL):
         "email": email
     }
     
-    requisicao_post(URL, novo_usuario)
+    requisicao_conta(URL, novo_usuario)
 
 def login(URL):
     username = str(input("Digite o seu username: "))
@@ -68,20 +68,37 @@ def login(URL):
         "password": senha,
     }
     
-    requisicao_post(URL, usuario)
+    requisicao_conta(URL, usuario)
 
-def criar_projeto(URL):
-    nome = str(input("Digite o nome do projeto: "))
-    descricao = str(input("Digite a descrição do projeto: "))
-    
-    projeto = {
-        "nome": nome,
-        "descricao_projeto": descricao
-    }
-    
-    requisicao_post(URL, projeto)
+def criar_projeto(URL, token):
+    try:
+        nome = input("Digite o nome do projeto: ")
+        descricao = input("Digite a descrição do projeto: ")
+        
+        projeto = {
+            "nome": nome,
+            "descricao_projeto": descricao
+        }
+        headers = {
+            'Authorization': f'Token {token}'
+        }
+        
+        response = requests.post(URL, json=projeto, headers=headers)
+        
+        print(f"\nStatus Code: {response.status_code}")
+        try:
+            print("Resposta do Servidor (JSON):")
+            print(json.dumps(response.json(), indent=2))
+        except requests.exceptions.JSONDecodeError:
+            print("Resposta do Servidor (Texto):")
+            print(response.text)
+            
+    except requests.exceptions.ConnectionError:
+        print(f"\nERRO: Não foi possível conectar a {URL}")
+    except Exception as e:
+        print(f"Ocorreu um erro: {e}")
 
-def criar_tarefa(URL):
+def criar_tarefa(URL, token):
     titulo = str(input("Digite o titulo da tarefa: "))
     descricao = str(input("Digite a descricao da tarefa: "))
     id_projeto = int(input("Digite o id do projeto: "))
@@ -92,7 +109,19 @@ def criar_tarefa(URL):
         "projeto": id_projeto
     }
     
-    requisicao_post(URL, tarefa)
+    headers = {
+            'Authorization': f'Token {token}'
+        }
+    
+    response = requests.post(URL, json=tarefa, headers=headers)
+        
+    print(f"\nStatus Code: {response.status_code}")
+    try:
+        print("Resposta do Servidor (JSON):")
+        print(json.dumps(response.json(), indent=2))
+    except requests.exceptions.JSONDecodeError:
+        print("Resposta do Servidor (Texto):")
+        print(response.text)
 
 def testar_token(URL, token):
     print(f"\nEnviando requisição GET para {URL} com token {token}")
@@ -117,9 +146,13 @@ def testar_token(URL, token):
         print(f"\nERRO: Não foi possível conectar a {URL}")
 
     
-def requisicao_get(URL):
+def requisicao_get(URL, token):
+    headers = {
+        'Authorization': f'Token {token}'
+    }
+    
     try:
-        response = requests.get(URL)
+        response = requests.get(URL, headers=headers)
         
         print(f"\nStatus Code: {response.status_code}")
         
@@ -133,7 +166,7 @@ def requisicao_get(URL):
     except requests.exceptions.ConnectionError:
         print(f"\nERRO: Não foi possível conectar a {URL}")
 
-def requisicao_post(URL, user):
+def requisicao_conta(URL, user):
     global token_salvo
     try:
         response = requests.post(URL, json=user)
