@@ -3,7 +3,7 @@ import json
 
 def menu():
     print("Escolha uma opção:")
-    print("1 - signup   2 - login:")
+    print("1 - signup   2 - login.  3 - testar o token:")
     
     return int(input())
 
@@ -24,7 +24,10 @@ def main():
             login(URL)
         if op == 3:
             URL = URL_test
-            test(URL)
+            if not token_salvo:
+                print("\nERRO: Você precisa fazer login (Opção 2) primeiro.")
+            else:
+                testar_token(URL, token_salvo)
         
 
 def signup(URL):
@@ -51,32 +54,46 @@ def login(URL):
     
     requisicao(URL, usuario)
 
-def test(URL):
-    response = requests.get(URL)
+def testar_token(URL, token):
+    print(f"\nEnviando requisição GET para {URL} com token {token}")
     
-    print(f"\nStatus Code: { response.status_code}")
-    try:
-        print("Resposta do Servidor (JSON):")
-        print(json.dumps(response.json(), indent=2))
-    except requests.exceptions.JSONDecodeError:
-        # Se a resposta não for JSON (ex: um erro 500)
-        print("Resposta do Servidor (Texto):")
-        print(response.text)
+    headers = {
+        'Authorization': f'Token {token}'
+    }
     
-def requisicao(URL, user):
     try:
-        # Faz a requisição POST, enviando os dados como JSON
-        response = requests.post(URL, json=user)
+        response = requests.get(URL, headers=headers)
         
-        # Imprime o código de status (ex: 200, 201, 400)
         print(f"\nStatus Code: {response.status_code}")
         
-        # Tenta imprimir a resposta JSON formatada
+        if response.status_code == 200:
+            print("RESPOSTA (sucesso):")
+            print(response.text) 
+        else:
+            print("RESPOSTA (falha):")
+            print(response.text) 
+
+    except requests.exceptions.ConnectionError:
+        print(f"\nERRO: Não foi possível conectar a {URL}")
+
+    
+def requisicao(URL, user):
+    global token_salvo
+    try:
+        response = requests.post(URL, json=user)
+        
+        print(f"\nStatus Code: {response.status_code}")
+        
         try:
+            resposta_json = response.json()
             print("Resposta do Servidor (JSON):")
             print(json.dumps(response.json(), indent=2))
+            
+            if 'token' in resposta_json and response.status_code in [200]:
+                token_salvo = resposta_json['token']
+                print(f"\n--- TOKEN SALVO: {token_salvo} ---")
+                
         except requests.exceptions.JSONDecodeError:
-            # Se a resposta não for JSON (ex: um erro 500)
             print("Resposta do Servidor (Texto):")
             print(response.text)
 
