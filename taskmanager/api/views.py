@@ -1,5 +1,3 @@
-from django.shortcuts import render 
-
 from .models import Usuario, Tarefa, Projeto
 from .serializers import UsuarioSerializer, TarefaSerializer, ProjetoSerializer
 from rest_framework import viewsets 
