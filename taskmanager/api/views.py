@@ -5,9 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status 
 from rest_framework.decorators import api_view 
 from rest_framework.permissions import IsAuthenticated 
-
 from rest_framework.authtoken.models import Token 
-
 from rest_framework.decorators import authentication_classes, permission_classes 
 from rest_framework.permissions import IsAuthenticated  
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication 
@@ -24,6 +22,17 @@ class TarefaViewSet(viewsets.ModelViewSet):
 class ProjetoViewSet(viewsets.ModelViewSet):
     queryset = Projeto.objects.all()
     serializer_class = ProjetoSerializer
+    
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated] 
+
+    def perform_create(self, serializer):
+        novo_projeto = serializer.save()
+        
+        usuario_logado = self.request.user
+
+        usuario_logado.projeto = novo_projeto
+        usuario_logado.save()
 
 @api_view(['POST'])
 def login(request):
